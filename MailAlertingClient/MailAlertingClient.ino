@@ -1,11 +1,11 @@
 #include "PubSubClient.h"
 #include "WiFi.h"
 
-const char* ssid = "<SSID>";
-const char* password =  "<WIFI_Password>";
-const char* MQTT_BROKER_IP = "<MQTT_BROKER_IP>"
-const int MQTT_BROKER_PORT = 1883
-const char* MQTT_CLIENT_NAME = "maclient"
+const char* wifiSSID = "<WIFI_SSID>";
+const char* wifiPassword =  "<WIFI_Password>";
+const char* MQTT_BROKER_IP = "<MQTT_BROKER_IP>";
+const int MQTT_BROKER_PORT = 1883;
+const char* MQTT_CLIENT_NAME = "maclient";
 
 const int SENSOR_PIN = 13;
 const char* STATUS_TOPIC = "mailbox/state";
@@ -27,7 +27,7 @@ void setup() {
 void loop() {
 
   if(!wifiStarted){
-    WiFi.begin(ssid, password);
+    WiFi.begin(wifiSSID, wifiPassword);
     while (WiFi.status() != WL_CONNECTED) {
       delay(500);
       // Serial.println("Connecting to WiFi..");
