@@ -11,12 +11,17 @@ DEVICES_FOR_IMPLICIT_NOTIFICATION = None  # ['AB12']
 MAILBOX_OPEN_TEXT = "Mailbox was opened"
 MAILBOX_STATE_MISSED_TEXT = "Mailbox was opened (explicit open state missed)"
 
+PUSH_NOTIFIER_USER_NAME = "<PushNotifier UserName>"
+PUSH_NOTIFIER_PASSWORD = "<PushNotifier Password>"
+PUSH_NOTIFIER_PACKAGE_NAME = "<PushNotifier PackageName>"
+PUSH_NOTIFIER_API_KEY = "<PushNotifier APIKey>"
+
 print("Sleeping for 60 seconds to give the mqtt broker time to start")
 time.sleep(60)
 print("Starting script")
 
 pn = pn.PushNotifier(
-    '<PushNotifier UserName>', '<PushNotifier Password>', '<PushNotifier PackageName>', '<PushNotifier APIKey>')
+    PUSH_NOTIFIER_USER_NAME, PUSH_NOTIFIER_PASSWORD, PUSH_NOTIFIER_PACKAGE_NAME, PUSH_NOTIFIER_API_KEY)
 
 HIGH_STATE = b'HIGH'
 LOW_STATE = b'LOW'
@@ -28,6 +33,7 @@ is_first_message = True
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
     client.subscribe("mailbox/#", 2)
+
 
 def on_message(client, userdata, msg):
     global last_status
