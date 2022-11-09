@@ -1,0 +1,13 @@
+[Unit]
+Description=MailboxReceiverService
+After=network.target
+Wants=network-online.target
+
+[Service]
+User=pi
+Type=simple
+ExecStart=/bin/python -u home/pi/receiverService.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
