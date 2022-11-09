@@ -1,6 +1,10 @@
 # mail-alerting
 Receive a Pushnotification when someone opens your Mailbox (Postbox)
 
+### Special Thanks
+- @a-mnich
+- @ChrisCh4padia
+
 # What you'll need
 - ESP32
 - Reed switch
