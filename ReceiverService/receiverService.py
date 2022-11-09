@@ -4,12 +4,12 @@ import time
 import paho.mqtt.client as mqtt
 from pushnotifier import PushNotifier as pn
 
+MQTT_BROKER_IP = "<MQTT_BROKER_IP>"
+MQTT_BROKER_PORT = 1883
 DEVICES_FOR_NOTIFICATION = None  # ['AB12']
 DEVICES_FOR_IMPLICIT_NOTIFICATION = None  # ['AB12']
 MAILBOX_OPEN_TEXT = "Mailbox was opened"
 MAILBOX_STATE_MISSED_TEXT = "Mailbox was opened (explicit open state missed)"
-MQTT_BROKER_IP = "<MQTT_BROKER_IP>"
-MQTT_BROKER_PORT = 1883
 
 print("Sleeping for 60 seconds to give the mqtt broker time to start")
 time.sleep(60)
