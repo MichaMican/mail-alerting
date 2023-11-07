@@ -12,11 +12,15 @@ DEVICES_FOR_IMPLICIT_NOTIFICATION = None  # ['AB12']
 MAILBOX_OPEN_TEXT = "Mailbox was opened"
 MAILBOX_STATE_MISSED_TEXT = "Mailbox was opened (explicit open state missed)"
 
-# Read environment variables for PushNotifier credentials
-PUSH_NOTIFIER_USER_NAME = os.environ["PUSH_NOTIFIER_USERNAME"]
-PUSH_NOTIFIER_PASSWORD = os.environ["PUSH_NOTIFIER_PASSWORD"]
-PUSH_NOTIFIER_API_KEY = os.environ["PUSH_NOTIFIER_APIKEY"]
-PUSH_NOTIFIER_PACKAGE_NAME = "<PushNotifier PackageName>"
+try:
+    PUSH_NOTIFIER_USER_NAME = os.environ["PUSH_NOTIFIER_USER_NAME"]
+    PUSH_NOTIFIER_PASSWORD = os.environ["PUSH_NOTIFIER_PASSWORD"]
+    PUSH_NOTIFIER_API_KEY = os.environ["PUSH_NOTIFIER_API_KEY"]
+    PUSH_NOTIFIER_PACKAGE_NAME = "<PushNotifier PackageName>"  # You can set this if needed
+
+except KeyError as e:
+    print(f"Error: {e} environment variable is not set.")
+    exit(1)
 
 print("Sleeping for 60 seconds to give the MQTT broker time to start")
 time.sleep(60)
