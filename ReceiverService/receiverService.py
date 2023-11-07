@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import time
+import os
 import paho.mqtt.client as mqtt
 from pushnotifier import PushNotifier as pn
 
@@ -11,12 +12,17 @@ DEVICES_FOR_IMPLICIT_NOTIFICATION = None  # ['AB12']
 MAILBOX_OPEN_TEXT = "Mailbox was opened"
 MAILBOX_STATE_MISSED_TEXT = "Mailbox was opened (explicit open state missed)"
 
-PUSH_NOTIFIER_USER_NAME = "<PushNotifier UserName>"
-PUSH_NOTIFIER_PASSWORD = "<PushNotifier Password>"
-PUSH_NOTIFIER_PACKAGE_NAME = "<PushNotifier PackageName>"
-PUSH_NOTIFIER_API_KEY = "<PushNotifier APIKey>"
+try:
+    PUSH_NOTIFIER_USER_NAME = os.environ["PUSH_NOTIFIER_USER_NAME"]
+    PUSH_NOTIFIER_PASSWORD = os.environ["PUSH_NOTIFIER_PASSWORD"]
+    PUSH_NOTIFIER_API_KEY = os.environ["PUSH_NOTIFIER_API_KEY"]
+    PUSH_NOTIFIER_PACKAGE_NAME = "<PushNotifier PackageName>"  # You can set this if needed
 
-print("Sleeping for 60 seconds to give the mqtt broker time to start")
+except KeyError as e:
+    print(f"Error: {e} environment variable is not set.")
+    exit(1)
+
+print("Sleeping for 60 seconds to give the MQTT broker time to start")
 time.sleep(60)
 print("Starting script")
 
@@ -29,11 +35,9 @@ LOW_STATE = b'LOW'
 last_status = HIGH_STATE
 is_first_message = True
 
-
 def on_connect(client, userdata, flags, rc):
     print(f"Connected with result code {rc}")
     client.subscribe("mailbox/#", 2)
-
 
 def on_message(client, userdata, msg):
     global last_status
@@ -41,17 +45,14 @@ def on_message(client, userdata, msg):
     print(msg.topic+" "+str(msg.payload))
 
     if last_status != msg.payload and msg.payload == LOW_STATE:
-        pn.send_text(MAILBOX_OPEN_TEXT, silent=False,
-                     devices=DEVICES_FOR_NOTIFICATION)
+        pn.send_text(MAILBOX_OPEN_TEXT, silent=False, devices=DEVICES_FOR_NOTIFICATION)
 
     # explicit open state was missed
     if last_status == msg.payload and not is_first_message:
-        pn.send_text(MAILBOX_STATE_MISSED_TEXT, silent=True,
-                     devices=DEVICES_FOR_IMPLICIT_NOTIFICATION)
+        pn.send_text(MAILBOX_STATE_MISSED_TEXT, silent=True, devices=DEVICES_FOR_IMPLICIT_NOTIFICATION)
 
     last_status = msg.payload
     is_first_message = False
-
 
 client = mqtt.Client()
 client.on_connect = on_connect

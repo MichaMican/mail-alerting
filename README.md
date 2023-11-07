@@ -19,11 +19,12 @@ Receive a Pushnotification when someone opens your Mailbox (Postbox)
 3. Upload MailAlertingClient.ino to ESP
 4. Setup RapberryPi
 5. _OPTIONAL: Install Mosquitto MQTT Broker on RasberryPi)_
-6. Copy receiverService.py to /home/pi directory
+6. Copy receiverService.py to /home/pi/ directory
 7. Install pip dependencies
-8. Copy MailboxReceiverService.service to /etc/systemd/system
+8. Copy MailboxReceiverService.service to /etc/systemd/system/
 9. Make script executable (chmod)
-10. Reload systemd & enable service
+10. Set neccesary enviroment variables 
+11. Reload systemd & enable service
 
 ## Code
 1. Clone the repo
@@ -36,9 +37,7 @@ Receive a Pushnotification when someone opens your Mailbox (Postbox)
 | wifiPassword     |               | Password of your Wifi                                                                                                |
 | MQTT_BROKER_IP   |               | IP of your MQTT Broker (If you run the MQTT Broker on the Raspberry Pi this will be the same IP as the Raspberry IP) |
 | MQTT_BROKER_PORT | 1883          | Port of the MQTT broker.                                                                                             |
-| MQTT_CLIENT_NAME | maclient      | Client name which the ESP will use to publish                                                                        |
-|                  |               |                                                                                                                      |
-**ReceiverService/receiverService.py**  
+| MQTT_CLIENT_NAME | maclient      | Client name which the ESP will use to publish                                                                        |                          
 
 | Variable                          | Default Value                                   | Description                                                                                                                                                                                                                                                                                                              |
 | --------------------------------- | ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -48,10 +47,10 @@ Receive a Pushnotification when someone opens your Mailbox (Postbox)
 | DEVICES_FOR_IMPLICIT_NOTIFICATION | None                                            | V2Ids of Devices, which should receive a notification on a implicit Mailbox open. This is send when the receiver Service receives two closed states without an open state in between. You can target specific devices by setting this to a arry of ids e.g. `['AB12']`. The default setting will publish to all Devices. |
 | MAILBOX_OPEN_TEXT                 | Mailbox was opened                              | Text which should get pushed to the devices on Mailbox open.                                                                                                                                                                                                                                                             |
 | MAILBOX_STATE_MISSED_TEXT         | Mailbox was opened (explicit open state missed) | Text which should get pushed to the devices on implicit Mailbox open. This is send when the receiver Service receives two closed states without an open state in between.                                                                                                                                                |
-| PUSH_NOTIFIER_USER_NAME           |                                                 | UserName of your PushNotifier Account                                                                                                                                                                                                                                                                                    |
-| PUSH_NOTIFIER_PASSWORD            |                                                 | Password of your PushNotifier Account                                                                                                                                                                                                                                                                                    |
+| PUSH_NOTIFIER_USER_NAME           |                                                 | UserName of your PushNotifier Account (Please set this as environment variable!)                                                                                                                                                                                                                                                                                         |
+| PUSH_NOTIFIER_PASSWORD            |                                                 | Password of your PushNotifier Account (Please set this as environment variable!)                                                                                                                                                                                                                                                                                        |
 | PUSH_NOTIFIER_PACKAGE_NAME        |                                                 | Packagename of your PushNotifier App                                                                                                                                                                                                                                                                                     |
-| PUSH_NOTIFIER_API_KEY             |                                                 | APIKey of your PushNotifier Account                                                                                                                                                                                                                                                                                      |
+| PUSH_NOTIFIER_API_KEY             |                                                 | APIKey of your PushNotifier Account (Please set this as environment variable!)                                                                                                                                                                                                                                                                                      |
 
 ## ESP Setup
 ### Dependencies
@@ -77,7 +76,6 @@ Install Python dependencies
 > pip install paho-mqtt
 > pip install pushnotifier
 ```
-
 Setup systemd to automatically start the receiverService.py
 ```console
 > sudo chmod 744 MailboxReceiverService.service
@@ -87,3 +85,25 @@ Setup systemd to automatically start the receiverService.py
 > sudo systemctl start MailboxReceiverService.service
 ```
 > NOTE: To Debug the systemd setup you can use `sudo systemctl status MailboxReceiverService.service` for the general status and `journalctl -e -u MailboxReceiverService` for more detailed logs
+
+
+## Setting environment variables 
+This was introduced as a security practice to keep credentials out of script files.
+
+### Temporary Environment Variables
+
+You can set an environment variable temporarily for your current terminal session using the `export` command:
+
+```bash
+export PUSH_NOTIFIER_USERNAME="your_username"
+export PUSH_NOTIFIER_PASSWORD="your_password"
+export PUSH_NOTIFIER_APIKEY="your_api_key"
+```
+### Permanent Environment Variables for user
+To set environment variables for a user permanently, you can add the export commands to the user's profile file. For a typical user, you can add them to the ~/.bashrc or ~/.bash_profile file
+
+```bash
+echo 'export PUSH_NOTIFIER_USERNAME="your_username"' >> ~/.bashrc
+echo 'export PUSH_NOTIFIER_PASSWORD="your_password"' >> ~/.bashrc
+echo 'export PUSH_NOTIFIER_APIKEY="your_api_key"' >> ~/.bashrc
+```
